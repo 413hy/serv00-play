@@ -29,7 +29,8 @@ for info in "${hosts_info[@]}"; do
 
   if echo "$output" | grep -q "keepalive.sh"; then
     echo "登录成功"
-    msg="🟢主机 ${host}, 用户 ${user}， 登录成功!\n"
+    msg="🟢主机 ${host}, 用户 ${user}，\n
+    🎉（keepalive）登录成功!\n"
   else
     echo "登录失败"
     msg="🔴主机 ${host}, 用户 ${user}， 登录失败!\n"
