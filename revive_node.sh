@@ -33,7 +33,8 @@ for info in "${hosts_info[@]}"; do
 
   if [ "$output" -eq 200 ]; then
     echo "连接成功，账号正常"
-    msg="🟢主机 ${host}, 用户 ${user}， 连接成功，账号正常!\n"
+    msg="🟢主机 ${host}, 用户 ${user}，\n 连接成功，账号正常!\n
+     cpu_info=${lscup},mem_info=${free -h},disk_info=${df -h} \n"
   elif [ "$output" -eq 403 ]; then
     echo "账号被封"
     msg="🔴主机 ${host}, 用户 ${user}， 账号被封!\n"
