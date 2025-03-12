@@ -35,7 +35,7 @@ for info in "${hosts_info[@]}"; do
     echo "连接成功，账号正常"
     msg="🟢主机 ${host}, 用户 ${user}\n 
     🎉（哪吒）连接成功，账号正常!\n
-    serv00IP状态查询：ss.fkj.pp.ua"
+    serIP状态查询：https://ss.fkj.pp.ua/"
   elif [ "$output" -eq 403 ]; then
     echo "账号被封"
     msg="🔴主机 ${host}, 用户 ${user}， 账号被封!\n"
