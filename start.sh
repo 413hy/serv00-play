@@ -731,6 +731,7 @@ configSingBox() {
       if [[ -n "$hy2_ip" ]]; then
         green "选中未封ip为 $hy2_ip"
       else
+        hy2_ip=$(curl -s icanhazip.com)
         red "未能找到未封IP,保持默认值！"
       fi
       ;;
@@ -817,6 +818,7 @@ configSingBox() {
       if [[ -n "$hy2_ip" ]]; then
         green "选中未封ip为 $hy2_ip"
       else
+        hy2_ip=$(curl -s icanhazip.com)
         red "未能找到未封IP,保持默认值！"
       fi
       #配置socks5
@@ -1246,6 +1248,7 @@ installNeZhaAgent() {
   if [ ! -e "${workedir}" ]; then
     mkdir -p "${workedir}"
   fi
+
   cd ${workedir}
   if [[ ! -e nezha-agent ]]; then
     echo "正在下载哪吒探针..."
@@ -1453,7 +1456,7 @@ installMtg() {
   #自动生成密钥
   head=$(hostname | cut -d '.' -f 1)
   no=${head#s}
-  host="panel${no}.serv00.com"
+  host="panel${no}.$(getDoMain)"
   secret=$(./mtg generate-secret --hex $host)
   loadPort
   randomPort tcp mtg
@@ -1508,7 +1511,7 @@ startMtg() {
   eval "$cmd"
   sleep 3
   if checkMtgAlive; then
-    mtproto="https://t.me/proxy?server=${host}.serv00.com&port=${port}&secret=${secret}"
+    mtproto="https://t.me/proxy?server=${host}.$(getDoMain)&port=${port}&secret=${secret}"
     echo "$mtproto"
     green "启动成功"
   else
@@ -1841,15 +1844,15 @@ printIndexPorts() {
 
 delPortMenu() {
   loadIndexPorts
-
-  if [[ ${#indexPorts[@]} -gt 0 ]]; then
+  local portNum=${#indexPorts[@]}
+  if [[ ${portNum} -gt 0 ]]; then
     printIndexPorts
     read -p "请选择要删除的端口记录编号(输入-1删除所有端口记录, 回车返回):" number
     number=${number:-99}
 
     if [[ $number -eq 99 ]]; then
       return
-    elif [[ $number -gt 3 || $number -lt -1 || $number -eq 0 ]]; then
+    elif [[ $number -gt $portNum || $number -lt -1 || $number -eq 0 ]]; then
       echo "非法输入!"
       return
     elif [[ $number -eq -1 ]]; then
@@ -2453,6 +2456,9 @@ makeWWW() {
   is_self_domain=0
   webIp=$(get_webip)
   default_webip=$(get_default_webip)
+  if [[ -z "$webIp" ]]; then
+    webIp=$default_webip
+  fi
   green "可用webip是: $webIp, 默认webip是: $default_webip"
   read -p "是否使用自定义域名? [y/n] [n]:" input
   input=${input:-n}
@@ -2460,12 +2466,7 @@ makeWWW() {
     is_self_domain=1
     read -p "请输入域名(确保此前域名已指向webip):" domain
   else
-    user="$(whoami)"
-    if isServ00; then
-      domain="${proc}.$user.serv00.net"
-    else
-      domain="$proc.$user.ct8.pl"
-    fi
+    domain=$(getUserDoMain "$proc")
   fi
 
   if [[ -z "$domain" ]]; then
@@ -2819,7 +2820,7 @@ startWebSSH() {
     stopProc "wssh"
   fi
   echo "正在启动中..."
-  cmd="nohup ./wssh --port=$port --fbidhttp=False --xheaders=False --encoding='utf-8' --delay=10  $args &"
+  cmd="nohup ./wssh --port=$port --wpintvl=30 --fbidhttp=False --xheaders=False --encoding='utf-8' --delay=10  $args &"
   eval "$cmd"
   sleep 2
   if checkProcAlive wssh; then
@@ -2989,8 +2990,7 @@ keepAliveServ() {
 }
 
 installkeepAlive() {
-  local user="$(whoami)"
-  local domain="$user.serv00.net"
+  local domain=$(getUserDoMain)
   domain="${domain,,}"
   local domainPath="${installpath}/domains/$domain/public_nodejs"
   local workdir="${installpath}/serv00-play/keepalive"
@@ -3045,8 +3045,7 @@ installkeepAlive() {
 }
 
 uninstallkeepAlive() {
-  local user="$(whoami)"
-  local domain="$user.serv00.net"
+  local domain=$(getUserDoMain)
   domain="${domain,,}"
   local domainPath="${installpath}/domains/$domain/public_nodejs"
   read -p "是否卸载? [y/n] [n]:" input
@@ -3062,8 +3061,7 @@ uninstallkeepAlive() {
 }
 
 createDefaultDomain() {
-  local user="$(whoami)"
-  local domain="$user.serv00.net"
+  local domain=$(getUserDoMain)
   domain="${domain,,}"
   rt=$(devil www add $domain nodejs /usr/local/bin/node22 production)
   if [[ ! "$rt" =~ .*succesfully*$ ]]; then
@@ -3073,8 +3071,7 @@ createDefaultDomain() {
 }
 
 delDefaultDomain() {
-  local user="$(whoami)"
-  local domain="$user.serv00.net"
+  local domain=$(getUserDoMain)
   domain="${domain,,}"
   rt=$(devil www del $domain --remove)
   if [[ ! "$rt" =~ .*deleted*$ ]]; then
@@ -3084,8 +3081,7 @@ delDefaultDomain() {
 }
 
 updatekeepAlive() {
-  local user="$(whoami)"
-  local domain="$user.serv00.net"
+  local domain=$(getUserDoMain)
   domain="${domain,,}"
   domainPath="${installpath}/domains/$domain/public_nodejs"
   workDir="$installpath/serv00-play/keepalive"
@@ -3106,8 +3102,7 @@ updatekeepAlive() {
 }
 
 changeKeepAliveToken() {
-  local user="$(whoami)"
-  local domain="$user.serv00.net"
+  local domain=$(getUserDoMain)
   domain="${domain,,}"
   domainPath="${installpath}/domains/$domain/public_nodejs"
   if [[ ! -e "$domainPath/config.json" ]]; then
@@ -3132,8 +3127,7 @@ changeKeepAliveToken() {
 }
 
 setKeepAliveInterval() {
-  local user="$(whoami)"
-  local domain="$user.serv00.net"
+  local domain=$(getUserDoMain)
   domain="${domain,,}"
   domainPath="${installpath}/domains/$domain/public_nodejs"
   if [[ ! -e "$domainPath/config.json" ]]; then

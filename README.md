@@ -1,10 +1,10 @@
-# serv00 上的一些应用，包括 argo+vmess/vmess+ws/hy2/socks5/mtproto/alist/哪吒探针/sun-panel/webssh 等, 自动化部署、批量保号、进程防杀、消息推送
+# serv00/hostuno 上的一些应用，包括 argo+vmess/vmess+ws/hy2/socks5/mtproto/alist/哪吒探针/sun-panel/webssh 等, 自动化部署、批量保号、进程防杀、消息推送
 
 💖 如果你在用这个项目，请给我打个 star，好让我知道有多少人从这个项目中受益。
 
 ## 前置工作
 
-1. 你需要有一个 serv00 帐号
+1. 你需要有一个 serv00/hostuno 帐号
 2. 首次运行，无需使用面板，选 1 安装 serv00-play, 它会自动重新登录，输入 ss 回车进入界面。(以后都是输入 ss 回车进入界面)
 
 ## 安装说明
@@ -101,3 +101,7 @@ _捐赠将是对我最大的支持，它将激励我持续的创新和创作。_
 
 本程序仅供学习了解, 非盈利目的，请于下载后 24 小时内删除, 不得用作任何商业用途, 代码、数据及图片均有所属版权, 如转载须注明来源。
 使用本程序必循遵守部署免责声明。使用本程序必循遵守部署服务器所在地、所在国家和用户所在国家的法律法规, 程序作者不对使用者任何不当行为负责。
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=frankiejun/serv00-play&type=Date)](https://www.star-history.com/#frankiejun/serv00-play&Date)
