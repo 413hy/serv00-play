@@ -55,10 +55,10 @@ for info in "${hosts_info[@]}"; do
     ./tgsend.sh "Host:$host, user:$user, 授权码错误，请检查!"
   else
     echo "连接失败，可能网络问题!"
-    msg="🔴主机 ${host}, 用户 ${user}， 连接失败，可能网络问题!\n"
+    msg="🟡主机 ${host}, 用户 ${user}， 连接失败，可能网络问题!\n"
     chmod +x ./tgsend.sh
     export PASS=$pass
-    ./tgsend.sh "Host:$host, user:$user, 连接失败，可能网络问题，可直接访问主页查看: https://$user.serv00.net"
+    ./tgsend.sh "Host:$host, user:$user, 连接失败，可能网络问题，访问哪吒看看吧: https://$user.serv00.net"
   fi
   summary=$summary$(echo -n $msg)
 done
