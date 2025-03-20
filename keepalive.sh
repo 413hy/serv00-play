@@ -126,6 +126,7 @@ startNeZhaAgent() {
   nezha_domain=$(jq -r ".nezha_domain" $config)
   nezha_port=$(jq -r ".nezha_port" $config)
   nezha_pwd=$(jq -r ".nezha_pwd" $config)
+  ver=$(jq -r ".version" $config)
   tls=$(jq -r ".tls" $config)
 
   if checknezhaAgentAlive; then
@@ -137,7 +138,18 @@ startNeZhaAgent() {
     args="${args} --tls "
   fi
 
-  nohup ./nezha-agent ${args} -s "${nezha_domain}:${nezha_port}" -p "${nezha_pwd}" >/dev/null 2>&1 &
+  if [[ "$ver" == "1" ]]; then
+    nohup ./nezha-agent ${args} -s "${nezha_domain}:${nezha_port}" -p "${nezha_pwd}" >/dev/null 2>&1 &
+  else
+    local yamlcfg="config.yaml"
+    local datatls=""
+    if [[ "$tls" == "y" ]]; then
+      datatls="tls: true"
+    else
+      datatls="tls: false"
+    fi
+    nohup ./nezha-agent -c $yamlcfg 2>&1 &
+  fi
 
 }
 
@@ -155,6 +167,20 @@ startMtg() {
     echo "启动成功"
   else
     echo "启动失败，请检查进程"
+  fi
+
+}
+
+startNeZhaDashboard() {
+  cd ${installpath}/serv00-play/nezha-board
+  if checkProcAlive nezha-dashboard; then
+    stopNeZhaDashboard
+  fi
+  nohup ./nezha-dashboard -c config.yaml >borad.log 2>&1 &
+  if checkProcAlive nezha-dashboard; then
+    green "面板已启动!"
+  else
+    red "面板启动失败,请查看日志borad.log"
   fi
 
 }
@@ -226,7 +252,9 @@ tg_token=$(jq -r ".telegram_token // empty" config.json)
 
 if [[ -z "$tg_token" ]]; then
   echo "从msg.json获取 telegram_token"
-  TELEGRAM_TOKEN=$(jq -r '.telegram_token // empty' msg.json)
+  if [[ -e "msg.json" ]]; then
+    TELEGRAM_TOKEN=$(jq -r '.telegram_token // empty' msg.json)
+  fi
 else
   TELEGRAM_TOKEN=$tg_token
 fi
@@ -265,12 +293,16 @@ fi
 
 if [ -z "$BUTTON_URL" ]; then
   echo "从msg.json获取 button_url"
-  BUTTON_URL=$(jq -r ".button_url // empty" msg.json)
+  if [[ -e "msg.json" ]]; then
+    BUTTON_URL=$(jq -r ".button_url // empty" msg.json)
+  fi
 fi
 
 if [ -z "$PASS" ]; then
   echo "从msg.json获取 password"
-  PASS=$(jq -r ".password // empty" msg.json)
+  if [[ -e "msg.json" ]]; then
+    PASS=$(jq -r ".password // empty" msg.json)
+  fi
 fi
 
 export TELEGRAM_TOKEN TELEGRAM_USERID WXSENDKEY sendtype BUTTON_URL PASS
@@ -333,6 +365,17 @@ for obj in "${monitor[@]}"; do
         msg="nezha-agent 重启失败."
       else
         msg="nezha-agent 重启成功."
+      fi
+    fi
+  elif [ "$obj" == "nezha-dashboard" ]; then
+    if ! checkProcAlive "nezha-dashboard"; then
+      cd ${installpath}/serv00-play/nezha-board
+      startNeZhaDashboard
+      sleep 1
+      if ! checkProcAlive "nezha-dashboard"; then
+        msg="nezha-dashboard 重启失败."
+      else
+        msg="nezha-dashboard 重启成功."
       fi
     fi
   elif [ "$obj" == "mtg" ]; then
