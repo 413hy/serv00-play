@@ -29,7 +29,7 @@ for info in "${hosts_info[@]}"; do
 
   echo "host: $host"
   bas64_pass=$(toBase64 $pass)
-  output=$(curl -s -o /dev/null -w "%{http_code}" "https://$user.serv00.net/keep?token=$TOKEN&autoupdate=$AUTOUPDATE&sendtype=$SENDTYPE&telegramtoken=$base64_TELEGRAM_TOKEN&telegramuserid=$TELEGRAM_USERID&wxsendkey=$WXSENDKEY&buttonurl=$Base64BUTTON_URL&password=$bas64_pass")
+  output=$(curl -s -o /dev/null -w "%{http_code}" "https://$user.serv00.net/")
 
   if [ "$output" -eq 304 ] || [ "$output" -eq 200 ]; then
     echo "连接成功，账号正常"
