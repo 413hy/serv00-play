@@ -34,6 +34,7 @@ for info in "${hosts_info[@]}"; do
   if [ "$output" -eq 304 ] || [ "$output" -eq 200 ]; then
     echo "连接成功，账号正常"
     msg="🟢主机 ${host}, 用户 ${user}\n 
+    查看主机哪吒：https://$user.serv00.net/ \n
     🎉（哪吒）连接成功，账号正常!\n"
   elif [ "$output" -eq 403 ]; then
     echo "账号被封"
