@@ -9,8 +9,6 @@ BUTTON_URL=${BUTTON_URL:-null}
 LOGININFO=${LOGININFO:-N}
 export TELEGRAM_TOKEN TELEGRAM_USERID BUTTON_URL
 
-# 访问 0000.xyz 并打印 HTTP 状态码
-curl -s -o /dev/null -w "访问 0000.xyz，状态码：%{http_code}\n" http://0000.xyz
 
 # 使用 jq 提取 JSON 数组，并将其加载为 Bash 数组
 hosts_info=($(echo "${HOSTS_JSON}" | jq -c ".info[]"))
