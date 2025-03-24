@@ -1299,45 +1299,15 @@ updateAgent() {
   download_from_net "nezha-agent"
   if [[ -e "nezha-agent" ]]; then
     chmod +x ./nezha-agent
+  else
+    red "下载失败!"
+    return
   fi
   startNeZhaAgent
   green "更新完毕!"
 
   return
-  # local workedir="${installpath}/serv00-play/nezha"
-  # cd $workedir
 
-  # local_version="v"$(./nezha-agent -v | awk '{print $3}')
-  # latest_version=$(curl -sL "https://api.github.com/repos/nezhahq/agent/releases/latest" | jq -r '.tag_name // empty')
-
-  # if [[ "$local_version" != "$latest_version" ]]; then
-  #   echo "发现新版本: $latest_version，当前版本: $local_version。正在更新..."
-  #   download_url="https://github.com/nezhahq/agent/releases/download/$latest_version/nezha-agent_freebsd_amd64.zip"
-
-  #   local filezip="nezha-agent_latest.zip"
-  #   curl -sL -o "$filezip" "$download_url"
-  #   if [[ ! -e "$filezip" || -n $(file "$filezip" | grep "text") ]]; then
-  #     echo "下载探针文件失败!"
-  #     return
-  #   fi
-  #   local agent_runing=0
-  #   if checknezhaAgentAlive; then
-  #     stopNeZhaAgent
-  #     agent_runing=1
-  #   fi
-  #   unzip -o $filezip -d .
-  #   chmod +x ./nezha-agent
-  #   if [ $agent_runing -eq 1 ]; then
-  #     startAgent
-  #   fi
-  #   rm -rf $filezip
-  #   green "更新完成！新版本: $latest_version"
-  # else
-  #   echo "已经是最新版本: $local_version"
-  # fi
-  # if [[ $agent_runing -eq 1 ]]; then
-  #   exit 0
-  # fi
 }
 
 startAgent() {
@@ -1458,12 +1428,15 @@ installNeZhaDashboard() {
     red "面板已安装,重新安装请先卸载!"
     return 1
   fi
-  if ! checkDownload "dashboard"; then
+  if ! download_from_net "nezha-dashboard"; then
     return 1
   fi
   if [[ -e "dashboard" ]]; then
     mv ./dashboard ./nezha-dashboard
     chmod +x ./nezha-dashboard
+  else
+    red "下载失败!"
+    return 1
   fi
 
   #自动分配端口
