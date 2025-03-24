@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 访问 0000.xyz 并打印 HTTP 状态码
-curl -s -o /dev/null -w "访问 0000.xyz，状态码：%{http_code}\n" https://nezha.hypp.pp.ua
+curl -s -o /dev/null -w "访问 0000.xyz，状态码：%{http_code}\n" https://tragic-marris-yuuhe-51be17b0.koyeb.app/
 
 toBase64() {
   echo -n "$1" | base64
