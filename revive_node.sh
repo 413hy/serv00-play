@@ -29,7 +29,44 @@ for info in "${hosts_info[@]}"; do
 
   echo "host: $host"
   bas64_pass=$(toBase64 $pass)
-  output=$(curl -s -o /dev/null -w "%{http_code}" "https://$user.serv00.net/")
+  output=$(curl -s -o /dev/null -w "%{http_code}" "https://$user.serv00.net/keep?token=$TOKEN&autoupdate=$AUTOUPDATE&sendtype=$SENDTYPE&telegramtoken=$base64_TELEGRAM_TOKEN&telegramuserid=$TELEGRAM_USERID&wxsendkey=$WXSENDKEY&buttonurl=$Base64BUTTON_URL&password=$bas64_pass")
+
+  if [ "$output" -eq 200 ]; then
+    echo "连接成功，账号正常"
+    msg="🟢主机 ${host}, 用户 ${user}， 连接成功，账号正常!\n"
+  elif [ "$output" -eq 403 ]; then
+    echo "账号被封"
+    msg="🔴主机 ${host}, 用户 ${user}， 账号被封!\n"
+    chmod +x ./tgsend.sh
+    export PASS=$pass
+    ./tgsend.sh "Host:$host, user:$user, 账号被封，请检查!"
+  elif [ "$output" -eq 404 ]; then
+    echo "keepalive服务不在线"
+    msg="🔴主机 ${host}, 用户 ${user}， keepalive服务不在线!\n"
+    chmod +x ./tgsend.sh
+    export PASS=$pass
+    ./tgsend.sh "Host:$host, user:$user, keepalive服务不在线，请检查!"
+  elif [ "$output" -eq 401 ]; then
+    echo "授权码错误"
+    msg="🔴主机 ${host}, 用户 ${user}， 授权码错误!\n"
+    chmod +x ./tgsend.sh
+    export PASS=$pass
+    ./tgsend.sh "Host:$host, user:$user, 授权码错误，请检查!"
+  else
+    echo "连接失败，可能网络问题!"
+    msg="🔴主机 ${host}, 用户 ${user}， 连接失败，可能网络问题!\n"
+    chmod +x ./tgsend.sh
+    export PASS=$pass
+    ./tgsend.sh "Host:$host, user:$user, 连接失败，可能网络问题，可直接访问主页查看: https://$user.serv00.net"
+  fi
+  summary=$summary$(echo -n $msg)
+done
+
+if [[ "$LOGININFO" == "Y" ]]; then
+  chmod +x ./tgsend.sh
+  ./tgsend.sh "$summary"
+fi
+
 
   if [ "$output" -eq 304 ] || [ "$output" -eq 200 ]; then
     echo "连接成功，账号正常"
