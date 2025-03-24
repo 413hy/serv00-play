@@ -1,6 +1,6 @@
 #!/bin/bash
 
-curl -s -o /dev/null -w "访问 0000.xyz，状态码：%{http_code}\n" https://nezha.yhe.pp.ua,
+curl -s -o /dev/null -w "访问 0000.xyz，状态码：%{http_code}\n" https://nezha.yhe.pp.ua
 
 toBase64() {
   echo -n "$1" | base64
